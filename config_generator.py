@@ -25,40 +25,40 @@ class ConfigGenerator(QMainWindow):
             'enable_banteam_reserved_slots': True,
             'enable_banteam_bypass_geoblocking': True,
             'Roles': ['owner', 'admin', 'moderator'],
-            'Permissions': {
-                'KickingAndShortTermBanning': ['owner', 'admin', 'moderator'],
-                'BanningUpToDay': ['owner', 'admin', 'moderator'],
-                'LongTermBanning': ['owner', 'admin'],
-                'ForceclassSelf': ['owner', 'admin', 'moderator'],
-                'ForceclassToSpectator': ['owner', 'admin', 'moderator'],
-                'ForceclassWithoutRestrictions': ['owner', 'admin'],
-                'GivingItems': ['owner', 'admin'],
-                'WarheadEvents': ['owner', 'admin', 'moderator'],
-                'RespawnEvents': ['owner', 'admin'],
-                'RoundEvents': ['owner', 'admin', 'moderator'],
-                'SetGroup': ['owner'],
-                'GameplayData': ['owner', 'admin'],
-                'Overwatch': ['owner', 'admin', 'moderator'],
-                'FacilityManagement': ['owner', 'admin', 'moderator'],
-                'PlayersManagement': ['owner', 'admin'],
-                'PermissionsManagement': ['owner'],
-                'ServerConsoleCommands': [],
-                'ViewHiddenBadges': ['owner', 'admin', 'moderator'],
-                'ServerConfigs': ['owner'],
-                'Broadcasting': ['owner', 'admin', 'moderator'],
-                'PlayerSensitiveDataAccess': ['owner', 'admin', 'moderator'],
-                'Noclip': ['owner', 'admin'],
-                'AFKImmunity': ['owner', 'admin'],
-                'AdminChat': ['owner', 'admin', 'moderator'],
-                'ViewHiddenGlobalBadges': ['owner', 'admin', 'moderator'],
-                'Announcer': ['owner', 'admin'],
-                'Effects': ['owner', 'admin'],
-                'FriendlyFireDetectorImmunity': ['owner', 'admin', 'moderator'],
-                'FriendlyFireDetectorTempDisable': ['owner', 'admin'],
-                'ServerLogLiveFeed': ['owner', 'admin'],
-                'ExecuteAs': ['owner'],
-                'Vanish': ['owner']
-            },
+            'Permissions': [
+                {'KickingAndShortTermBanning': ['owner', 'admin', 'moderator']},
+                {'BanningUpToDay': ['owner', 'admin', 'moderator']},
+                {'LongTermBanning': ['owner', 'admin']},
+                {'ForceclassSelf': ['owner', 'admin', 'moderator']},
+                {'ForceclassToSpectator': ['owner', 'admin', 'moderator']},
+                {'ForceclassWithoutRestrictions': ['owner', 'admin']},
+                {'GivingItems': ['owner', 'admin']},
+                {'WarheadEvents': ['owner', 'admin', 'moderator']},
+                {'RespawnEvents': ['owner', 'admin']},
+                {'RoundEvents': ['owner', 'admin', 'moderator']},
+                {'SetGroup': ['owner']},
+                {'GameplayData': ['owner', 'admin']},
+                {'Overwatch': ['owner', 'admin', 'moderator']},
+                {'FacilityManagement': ['owner', 'admin', 'moderator']},
+                {'PlayersManagement': ['owner', 'admin']},
+                {'PermissionsManagement': ['owner']},
+                {'ServerConsoleCommands': []},
+                {'ViewHiddenBadges': ['owner', 'admin', 'moderator']},
+                {'ServerConfigs': ['owner']},
+                {'Broadcasting': ['owner', 'admin', 'moderator']},
+                {'PlayerSensitiveDataAccess': ['owner', 'admin', 'moderator']},
+                {'Noclip': ['owner', 'admin']},
+                {'AFKImmunity': ['owner', 'admin']},
+                {'AdminChat': ['owner', 'admin', 'moderator']},
+                {'ViewHiddenGlobalBadges': ['owner', 'admin', 'moderator']},
+                {'Announcer': ['owner', 'admin']},
+                {'Effects': ['owner', 'admin']},
+                {'FriendlyFireDetectorImmunity': ['owner', 'admin', 'moderator']},
+                {'FriendlyFireDetectorTempDisable': ['owner', 'admin']},
+                {'ServerLogLiveFeed': ['owner', 'admin']},
+                {'ExecuteAs': ['owner']},
+                {'Vanish': ['owner']}
+            ],
             'override_password': 'none',
             'override_password_role': 'owner',
             'allow_central_server_commands_as_ServerConsoleCommands': False,
@@ -114,7 +114,6 @@ class ConfigGenerator(QMainWindow):
         widget = QWidget()
         layout = QVBoxLayout(widget)
         
-        # Controls
         controls_layout = QHBoxLayout()
         
         self.user_id_input = QLineEdit()
@@ -136,7 +135,6 @@ class ConfigGenerator(QMainWindow):
         
         layout.addLayout(controls_layout)
         
-        # Members list
         self.members_list = QListWidget()
         layout.addWidget(self.members_list)
         
@@ -184,14 +182,30 @@ class ConfigGenerator(QMainWindow):
         editor_layout = QVBoxLayout(editor_widget)
         
         self.role_badge = QLineEdit()
+        self.role_badge.textChanged.connect(self.auto_save_role_changes)
+        
         self.role_color = QComboBox()
-        self.role_color.addItems(["red", "blue", "green", "yellow", "purple", "orange", "silver", "none"])
+        self.role_color.addItems([
+            "pink", "red", "brown", "silver", "light_green", "crimson", "cyan", "aqua",
+            "deep_pink", "tomato", "yellow", "magenta", "blue_green", "orange", "lime",
+            "green", "emerald", "carmine", "nickel", "mint", "army_green", "pumpkin",
+            "none"
+        ])
+        self.role_color.currentTextChanged.connect(self.auto_save_role_changes)
+        
         self.role_cover = QCheckBox("Cover (overrides global badges)")
+        self.role_cover.stateChanged.connect(self.auto_save_role_changes)
+        
         self.role_hidden = QCheckBox("Hidden (hidden badge)")
+        self.role_hidden.stateChanged.connect(self.auto_save_role_changes)
+        
         self.role_kick_power = QSpinBox()
         self.role_kick_power.setRange(0, 255)
+        self.role_kick_power.valueChanged.connect(self.auto_save_role_changes)
+        
         self.role_required_kick = QSpinBox()
         self.role_required_kick.setRange(0, 255)
+        self.role_required_kick.valueChanged.connect(self.auto_save_role_changes)
         
         editor_layout.addWidget(QLabel("Badge:"))
         editor_layout.addWidget(self.role_badge)
@@ -204,15 +218,24 @@ class ConfigGenerator(QMainWindow):
         editor_layout.addWidget(QLabel("Required Kick Power:"))
         editor_layout.addWidget(self.role_required_kick)
         
-        save_role_btn = QPushButton("Save Changes")
-        save_role_btn.clicked.connect(self.save_role_changes)
-        editor_layout.addWidget(save_role_btn)
-        
         editor_layout.addStretch()
         splitter.addWidget(editor_widget)
         
         layout.addWidget(splitter)
         return widget
+    
+    def auto_save_role_changes(self):
+        current_item = self.roles_list.currentItem()
+        if current_item:
+            role_name = current_item.text()
+            self.config_data[f"{role_name}_badge"] = self.role_badge.text()
+            self.config_data[f"{role_name}_color"] = self.role_color.currentText()
+            self.config_data[f"{role_name}_cover"] = self.role_cover.isChecked()
+            self.config_data[f"{role_name}_hidden"] = self.role_hidden.isChecked()
+            self.config_data[f"{role_name}_kick_power"] = self.role_kick_power.value()
+            self.config_data[f"{role_name}_required_kick_power"] = self.role_required_kick.value()
+            
+            self.update_config_preview()
 
     def create_permissions_tab(self):
         widget = QWidget()
@@ -321,16 +344,24 @@ class ConfigGenerator(QMainWindow):
             self.password_role.addItem(role)
 
     def update_permissions_table(self):
-        permissions = self.config_data['Permissions']
+        permissions_list = self.config_data['Permissions']
         roles = self.config_data['Roles']
         
-        self.permissions_table.setRowCount(len(permissions))
+        perm_names = []
+        for perm_dict in permissions_list:
+            perm_names.extend(perm_dict.keys())
+        
+        self.permissions_table.setRowCount(len(perm_names))
         self.permissions_table.setColumnCount(len(roles))
         self.permissions_table.setHorizontalHeaderLabels(roles)
+        self.permissions_table.setVerticalHeaderLabels(perm_names)
         
-        row = 0
-        for perm_name, perm_roles in permissions.items():
-            self.permissions_table.setVerticalHeaderItem(row, QTableWidgetItem(perm_name))
+        for row, perm_name in enumerate(perm_names):
+            perm_roles = []
+            for perm_dict in permissions_list:
+                if perm_name in perm_dict:
+                    perm_roles = perm_dict[perm_name]
+                    break
             
             for col, role in enumerate(roles):
                 checkbox = QCheckBox()
@@ -338,7 +369,6 @@ class ConfigGenerator(QMainWindow):
                 checkbox.stateChanged.connect(lambda state, p=perm_name, r=role: 
                                             self.update_permission(p, r, state))
                 self.permissions_table.setCellWidget(row, col, checkbox)
-            row += 1
 
     def update_ban_templates(self):
         templates = self.config_data['PredefinedBanTemplates']
@@ -350,7 +380,7 @@ class ConfigGenerator(QMainWindow):
 
     def update_config_preview(self):
         try:
-            yaml_output = yaml.dump(self.config_data, default_flow_style=False, allow_unicode=True)
+            yaml_output = yaml.dump(self.config_data, default_flow_style=None, allow_unicode=True, sort_keys=False)
             self.config_preview.setPlainText(yaml_output)
         except Exception as e:
             self.config_preview.setPlainText(f"YAML generation error: {str(e)}")
@@ -365,16 +395,7 @@ class ConfigGenerator(QMainWindow):
             self.user_id_input.clear()
 
     def _extract_member_pair(self, member):
-        """Return (user_id, role) for a member entry.
-
-        Supported input formats:
-        - dict: {user_id: role}
-        - list/tuple: [user_id, role]
-        - str: user_id (role will be empty string)
-        - any: stringified as user_id with empty role
-        """
         if isinstance(member, dict):
-            # take first key/value pair
             try:
                 k = next(iter(member))
                 return str(k), member[k]
@@ -408,6 +429,11 @@ class ConfigGenerator(QMainWindow):
                 self.config_data[f"{role_data['name']}_kick_power"] = 1
                 self.config_data[f"{role_data['name']}_required_kick_power"] = 1
                 
+                for perm_dict in self.config_data['Permissions']:
+                    for perm_name in perm_dict:
+                        if perm_name != 'ServerConsoleCommands':
+                            perm_dict[perm_name].append(role_data['name'])
+                
                 self.update_ui_from_config()
 
     def remove_role(self):
@@ -420,9 +446,10 @@ class ConfigGenerator(QMainWindow):
             for key in ['_badge', '_color', '_cover', '_hidden', '_kick_power', '_required_kick_power']:
                 self.config_data.pop(f"{role_name}{key}", None)
             
-            for perm in self.config_data['Permissions']:
-                if role_name in self.config_data['Permissions'][perm]:
-                    self.config_data['Permissions'][perm].remove(role_name)
+            for perm_dict in self.config_data['Permissions']:
+                for perm_name in perm_dict:
+                    if role_name in perm_dict[perm_name]:
+                        perm_dict[perm_name].remove(role_name)
             
             self.update_ui_from_config()
 
@@ -450,12 +477,15 @@ class ConfigGenerator(QMainWindow):
             self.update_ui_from_config()
 
     def update_permission(self, permission, role, state):
-        if state == Qt.CheckState.Checked.value:
-            if role not in self.config_data['Permissions'][permission]:
-                self.config_data['Permissions'][permission].append(role)
-        else:
-            if role in self.config_data['Permissions'][permission]:
-                self.config_data['Permissions'][permission].remove(role)
+        for perm_dict in self.config_data['Permissions']:
+            if permission in perm_dict:
+                if state == Qt.CheckState.Checked.value:
+                    if role not in perm_dict[permission]:
+                        perm_dict[permission].append(role)
+                else:
+                    if role in perm_dict[permission]:
+                        perm_dict[permission].remove(role)
+                break
 
     def add_ban_template(self):
         duration = self.ban_duration.value()
@@ -473,7 +503,6 @@ class ConfigGenerator(QMainWindow):
             self.update_ui_from_config()
 
     def load_config(self):
-        """Load config from YAML file"""
         try:
             filename, _ = QFileDialog.getOpenFileName(
                 self,
@@ -486,56 +515,62 @@ class ConfigGenerator(QMainWindow):
                 with open(filename, 'r', encoding='utf-8') as file:
                     loaded_data = yaml.safe_load(file)
                 
-                if loaded_data:
-                    if self.validate_config_structure(loaded_data):
-                        if 'Members' in loaded_data:
-                            normalized_members = []
-                            for m in loaded_data['Members']:
-                                if isinstance(m, dict):
-                                    normalized_members.append(m)
-                                elif isinstance(m, (list, tuple)) and len(m) >= 2:
-                                    normalized_members.append({str(m[0]): m[1]})
-                                elif isinstance(m, str):
-                                    normalized_members.append({m: ""})
-                                else:
-                                    normalized_members.append({str(m): ""})
-                            loaded_data['Members'] = normalized_members
-
-                        self.config_data = loaded_data
-                        self.update_ui_from_config()
-                        QMessageBox.information(self, "Success", f"Config loaded from:\n{filename}")
-                    else:
-                        QMessageBox.warning(self, "Warning", "Loaded file has invalid structure. Using default config.")
-                else:
+                if not loaded_data:
                     QMessageBox.warning(self, "Warning", "Failed to load config file. Using default config.")
+                    return
+
+                if 'Members' in loaded_data:
+                    normalized_members = []
+                    for m in loaded_data['Members']:
+                        if isinstance(m, dict):
+                            normalized_members.append(m)
+                        elif isinstance(m, (list, tuple)) and len(m) >= 2:
+                            normalized_members.append({str(m[0]): m[1]})
+                        elif isinstance(m, str):
+                            normalized_members.append({m: ""})
+                        else:
+                            normalized_members.append({str(m): ""})
+                    loaded_data['Members'] = normalized_members
+
+                if isinstance(loaded_data.get("Permissions"), dict):
+                    permissions_list = []
+                    for perm_name, roles in loaded_data["Permissions"].items():
+                        permissions_list.append({perm_name: roles})
+                    loaded_data["Permissions"] = permissions_list
+
+                if not self.validate_config_structure(loaded_data):
+                    QMessageBox.warning(self, "Warning", "Loaded file has invalid structure. Using default config.")
+                    return
+
+                self.config_data = loaded_data
+                self.update_ui_from_config()
+                QMessageBox.information(self, "Success", f"Config loaded from:\n{filename}")
                     
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Error loading config:\n{str(e)}")
 
     def save_config(self):
-        """Save config to YAML file"""
         try:
             self.update_config_from_ui()
             
             filename, _ = QFileDialog.getSaveFileName(
                 self,
                 "Save Config File",
-                "remoteadmin_config.yml",
-                "YAML Files (*.yml *.yaml);;All Files (*)"
+                "config_remoteadmin.txt",
+                "Text Files (*.txt);;All Files (*)"
             )
             
             if filename:
-                if not filename.lower().endswith(('.yml', '.yaml')):
-                    filename += '.yml'
-                
+                if not filename.lower().endswith(('.txt')):
+                    filename += '.txt'
+
                 with open(filename, 'w', encoding='utf-8') as file:
                     yaml.dump(
                         self.config_data, 
                         file, 
-                        default_flow_style=False, 
+                        default_flow_style=None, 
                         allow_unicode=True,
-                        sort_keys=False,
-                        indent=2
+                        sort_keys=False
                     )
                 
                 QMessageBox.information(self, "Success", f"Config saved to:\n{filename}")
@@ -545,7 +580,6 @@ class ConfigGenerator(QMainWindow):
             QMessageBox.critical(self, "Error", f"Error saving config:\n{str(e)}")
 
     def update_config_from_ui(self):
-        """Update config data from all UI elements"""
         self.config_data['enable_staff_access'] = self.staff_access.isChecked()
         self.config_data['enable_manager_access'] = self.manager_access.isChecked()
         self.config_data['enable_banteam_access'] = self.banteam_access.isChecked()
@@ -558,12 +592,10 @@ class ConfigGenerator(QMainWindow):
         self.config_data['enable_predefined_ban_templates'] = self.predefined_bans.isChecked()
 
     def validate_config_structure(self, config):
-        """Basic validation of config structure"""
         required_keys = ['Members', 'Roles', 'Permissions']
         return all(key in config for key in required_keys)
 
     def set_window_icon(self):
-        """Set icon for the main window"""
         
         if os.path.exists("icon.png"):
             self.setWindowIcon(QIcon("icon.png"))

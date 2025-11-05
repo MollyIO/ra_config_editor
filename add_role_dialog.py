@@ -20,7 +20,12 @@ class AddRoleDialog(QDialog):
         layout.addWidget(self.badge_name)
         
         self.color_combo = QComboBox()
-        self.color_combo.addItems(["red", "blue", "green", "yellow", "purple", "orange", "silver", "none"])
+        self.color_combo.addItems([
+            "pink", "red", "brown", "silver", "light_green", "crimson", "cyan",
+            "aqua", "deep_pink", "tomato", "yellow", "magenta", "blue_green",
+            "orange", "lime", "green", "emerald", "carmine", "nickel", "mint",
+            "army_green", "pumpkin", "none"
+        ])
         layout.addWidget(QLabel("Color:"))
         layout.addWidget(self.color_combo)
         
